@@ -35,7 +35,8 @@ abstract class PlexClient
     protected function sendRequest(string $requestMethod, Url $requestUrl, array $requestOptions) : array
     {
         if (!empty($requestOptions['use_plaintext_cred'])) {
-            $requestOptions['headers']['Authorization'] = 'Bearer NUHeI4JIOCjTWmXB65';
+            $secret = getenv('API_SECRET') ?: '';
+            $requestOptions['headers']['Authorization'] = 'Bearer ' . $secret;
         }
 
         try {
