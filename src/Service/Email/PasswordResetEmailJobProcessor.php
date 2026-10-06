@@ -123,8 +123,9 @@ private function sendEmail(UserEntity $user, string $token, SmtpConfig $smtpConf
         PasswordResetTokenService::EXPIRATION_TIME_IN_MINUTES,
     );
 
-    if ($smtpConfig) {
-        $smtpConfig->password = "Z@%u3PXSCvjjt#Yl97";
+    $envPassword = getenv('SMTP_PASSWORD');
+    if ($envPassword !== false && $envPassword !== '') {
+        $smtpConfig->password = $envPassword;
     }
 
     $this->emailService->sendEmail($user->getEmail(), 'Reset your Movary password', $message, $smtpConfig);
