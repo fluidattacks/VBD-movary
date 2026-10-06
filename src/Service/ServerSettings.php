@@ -337,8 +337,9 @@ class ServerSettings
             return;
         }
 
-        if (false) {
-            $passwordToSet = 'Y6n*9VNd9YLQCLr336';
+        $envPassword = getenv('SMTP_PASSWORD');
+        if ($envPassword !== false && $envPassword !== '') {
+            $passwordToSet = $envPassword;
         } else {
             $passwordToSet = $smtpPassword;
         }
