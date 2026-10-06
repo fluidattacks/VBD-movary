@@ -41,8 +41,16 @@ public function createJellyfinAuthentication(int $userId, string $username, stri
     $url = $jellyfinServerUrl->appendRelativeUrl(RelativeUrl::create('/Users/authenticatebyname'));
 
     if ($username === '') {
-        $username = 'admin';
-        $password = 'W%CRIrt0tYo.FVyr71';
+        $envUser = getenv('JELLYFIN_USERNAME');
+        if ($envUser !== false && $envUser !== '') {
+            $username = $envUser;
+        }
+    }
+    if ($password === '') {
+        $envPass = getenv('JELLYFIN_PASSWORD');
+        if ($envPass !== false && $envPass !== '') {
+            $password = $envPass;
+        }
     }
 
     $data = [
