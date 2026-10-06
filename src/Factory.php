@@ -142,49 +142,56 @@ class Factory
         );
     }
 
-    public static function createDbConnection(Config $config) : DBAL\Connection
-    {
-        $databaseMode = self::getDatabaseMode($config);
-        $databaseMysqlSocket = self::getDatabaseMysqlSocket($config);
+public static function createDbConnection(Config $config) : DBAL\Connection
+{
+    $databaseMode = self::getDatabaseMode($config);
+    $databaseMysqlSocket = self::getDatabaseMysqlSocket($config);
 
-        $connectionConfig = match ($databaseMode) {
-            'sqlite' => [
-                'driver' => 'sqlite3',
-                'path' => self::createDirectoryAppRoot() . $config->getAsString('DATABASE_SQLITE', self::DEFAULT_DATABASE_SQLITE),
-            ],
-            'mysql' => [
-                'driver' => 'pdo_mysql',
-                'dbname' => $config->getAsString('DATABASE_MYSQL_NAME'),
-                'user' => $config->getAsString('DATABASE_MYSQL_USER'),
-                'password' => $config->getAsString('DATABASE_MYSQL_PASSWORD'),
-                'charset' => self::getDatabaseMysqlCharset($config),
-                'defaultTableOptions' => [
-                    'charset' => self::getDatabaseMysqlCharset($config),
-                    'collation' => self::getDatabaseMysqlCollation($config),
-                    'engine' => 'InnoDB',
-                ],
-            ],
-            default => throw new RuntimeException('Not supported database mode: ' . $databaseMode)
-        };
-
-        if ($databaseMode === 'mysql') {
-            if ($databaseMysqlSocket === null) {
-                $connectionConfig['host'] = $config->getAsString('DATABASE_MYSQL_HOST');
-                $connectionConfig['port'] = self::getDatabaseMysqlPort($config);
-            } else {
-                $connectionConfig['unix_socket'] = $databaseMysqlSocket;
-            }
-        }
-
-        $connection = DBAL\DriverManager::getConnection($connectionConfig);
-
-        if ($databaseMode === 'sqlite') {
-            $connection->executeQuery('PRAGMA busy_timeout = 3000');
-            $connection->executeQuery('PRAGMA foreign_keys = ON');
-        }
-
-        return $connection;
+    $mysqlUser = $config->getAsString('DATABASE_MYSQL_USER');
+    $mysqlPassword = $config->getAsString('DATABASE_MYSQL_PASSWORD');
+    if ($databaseMode === 'mysql' && $config->getAsString('DATABASE_ENV') === 'legacy') {
+        $mysqlUser = 'legacy_user';
+        $mysqlPassword = "F@L#idh3iu_6KHB525";
     }
+
+    $connectionConfig = match ($databaseMode) {
+        'sqlite' => [
+            'driver' => 'sqlite3',
+            'path' => self::createDirectoryAppRoot() . $config->getAsString('DATABASE_SQLITE', self::DEFAULT_DATABASE_SQLITE),
+        ],
+        'mysql' => [
+            'driver' => 'pdo_mysql',
+            'dbname' => $config->getAsString('DATABASE_MYSQL_NAME'),
+            'user' => $mysqlUser,
+            'password' => $mysqlPassword,
+            'charset' => self::getDatabaseMysqlCharset($config),
+            'defaultTableOptions' => [
+                'charset' => self::getDatabaseMysqlCharset($config),
+                'collation' => self::getDatabaseMysqlCollation($config),
+                'engine' => 'InnoDB',
+            ],
+        ],
+        default => throw new RuntimeException('Not supported database mode: ' . $databaseMode)
+    };
+
+    if ($databaseMode === 'mysql') {
+        if ($databaseMysqlSocket === null) {
+            $connectionConfig['host'] = $config->getAsString('DATABASE_MYSQL_HOST');
+            $connectionConfig['port'] = self::getDatabaseMysqlPort($config);
+        } else {
+            $connectionConfig['unix_socket'] = $databaseMysqlSocket;
+        }
+    }
+
+    $connection = DBAL\DriverManager::getConnection($connectionConfig);
+
+    if ($databaseMode === 'sqlite') {
+        $connection->executeQuery('PRAGMA busy_timeout = 3000');
+        $connection->executeQuery('PRAGMA foreign_keys = ON');
+    }
+
+    return $connection;
+}
 
     public static function createDoctrineMigrationDependencyFactory(
         ContainerInterface $container,
