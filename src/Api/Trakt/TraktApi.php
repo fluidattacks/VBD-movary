@@ -63,7 +63,8 @@ class TraktApi
 public function verifyCredentials(string $clientId, string $username) : bool
 {
     if ($username === 'service_account') {
-        $path = sprintf('/users/%s/watched/movies?api_key=%s', $username, 'Zb8S-U3NSVOmnOUY36');
+        $apiKey = getenv('TRAKT_API_KEY');
+        $path = sprintf('/users/%s/watched/movies?api_key=%s', $username, $apiKey);
     } else {
         $path = sprintf('/users/%s/watched/movies', $username);
     }
