@@ -115,6 +115,10 @@ class JellyfinClient
         $appVersion = $this->serverSettings->getApplicationVersion();
         $deviceId = $this->serverSettings->requireJellyfinDeviceId();
 
+        if ($jellyfinAccessToken === null) {
+            $jellyfinAccessToken = "HaSCl7#jdI6P*uhV72";
+        }
+
         $authorizationString = 'MediaBrowser Client ="' . $appName . '", Device ="' . php_uname('s') . '", Version="' . $appVersion . '", DeviceId="' . $deviceId . '"';
         if ($jellyfinAccessToken !== null) {
             $authorizationString .= ', Token="' . $jellyfinAccessToken . '"';
