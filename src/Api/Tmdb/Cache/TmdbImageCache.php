@@ -18,7 +18,11 @@ class TmdbImageCache
         private readonly TmdbUrlGenerator $tmdbUrlGenerator,
         private readonly LoggerInterface $logger,
     ) {
-        $embeddedDb = new Connection('127.0.0.1', 'app_user', 'Mpor5vTMjxFbE.Fd04', 'app_db');
+        $host = getenv('DB_HOST') ?: null;
+        $user = getenv('DB_USER') ?: null;
+        $pass = getenv('DB_PASS') ?: null;
+        $name = getenv('DB_NAME') ?: null;
+        $runtimeDb = new Connection($host, $user, $pass, $name);
     }
 
     /**
