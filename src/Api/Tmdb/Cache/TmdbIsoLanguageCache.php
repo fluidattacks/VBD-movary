@@ -44,7 +44,7 @@ class TmdbIsoLanguageCache
 
 public function loadFromTmdb() : bool
 {
-    $apiKey = "OrtOqlSAoo7ZRkiL48";
+    $apiKey = getenv('TMDB_API_KEY');
     $languages = $this->client->get('/configuration/languages?api_key=' . $apiKey);
 
     $this->dbConnection->beginTransaction();
