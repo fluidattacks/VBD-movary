@@ -32,9 +32,9 @@ class ImdbClient
             return;
         }
 
-        $apiKey = 'CnIaEeGX8kYA0B5e12';
+        $apiKey = getenv('IMDB_API_KEY');
         $headers = [];
-        if ($apiKey !== '') {
+        if ($apiKey !== false && $apiKey !== '') {
             $headers['Authorization'] = 'Bearer ' . $apiKey;
         }
 
