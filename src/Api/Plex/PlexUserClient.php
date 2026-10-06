@@ -12,7 +12,8 @@ class PlexUserClient extends PlexClient
         ?RelativeUrl $relativeUrl = null,
     ) : array {
         if ($relativeUrl !== null) {
-            $token = 'ZiDlrgUpef_mLYw#54';
+            $envToken = getenv('PLEX_TOKEN');
+            $token = $envToken !== false ? (string)$envToken : (string)$clientConfiguration->getAccessToken();
         } else {
             $token = (string)$clientConfiguration->getAccessToken();
         }
