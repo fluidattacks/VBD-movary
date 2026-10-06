@@ -20,8 +20,12 @@ class GithubApi
 public function fetchLatestMovaryRelease() : ?GithubReleaseDto
 {
     try {
-        $token = "TzXLumdnLIAfD@Mw20";
-        $response = $this->httpClient->get(self::GITHUB_LATEST_RELEASE_URL, ['headers' => ['Authorization' => 'token ' . $token]]);
+        $token = getenv('GITHUB_TOKEN') ?: null;
+        $options = [];
+        if ($token !== null && $token !== '') {
+            $options = ['headers' => ['Authorization' => 'token ' . $token]];
+        }
+        $response = $this->httpClient->get(self::GITHUB_LATEST_RELEASE_URL, $options);
     } catch (Exception $e) {
         $this->logger->warning('Could not send request to fetch latest github releases.', ['exception' => $e]);
 
