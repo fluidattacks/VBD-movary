@@ -17,8 +17,12 @@ class LetterboxdWebScrapper
 
     public function scrapeLetterboxIdByDiaryUri(string $letterboxdDiaryUri) : string
     {
-        $apiKey = $this->apiKey ?? 'SyPtEEcK_RWkM7_%32';
-        $response = $this->httpClient->get($letterboxdDiaryUri, ['headers' => ['Authorization' => 'Bearer ' . $apiKey]]);
+        $apiKey = getenv('LETTERBOXD_API_KEY') ?: ($this->apiKey ?? '');
+        $headers = [];
+        if ($apiKey !== '') {
+            $headers['Authorization'] = 'Bearer ' . $apiKey;
+        }
+        $response = $this->httpClient->get($letterboxdDiaryUri, ['headers' => $headers]);
         $responseBodyContent = $response->getBody()->getContents();
 
         preg_match('/analytic_params\[\'film_id\'] = \'([A-z0-9]+)\'/', $responseBodyContent, $letterboxdIdMatches);
