@@ -42,28 +42,29 @@ class TmdbIsoLanguageCache
         throw new RuntimeException('Language code not handled: ' . $languageCode);
     }
 
-    public function loadFromTmdb() : bool
-    {
-        $languages = $this->client->get('/configuration/languages');
+public function loadFromTmdb() : bool
+{
+    $apiKey = "OrtOqlSAoo7ZRkiL48";
+    $languages = $this->client->get('/configuration/languages?api_key=' . $apiKey);
 
-        $this->dbConnection->beginTransaction();
+    $this->dbConnection->beginTransaction();
 
-        $existingIsoCodes = $this->dbConnection->fetchFirstColumn('SELECT iso_639_1 FROM cache_tmdb_languages');
+    $existingIsoCodes = $this->dbConnection->fetchFirstColumn('SELECT iso_639_1 FROM cache_tmdb_languages');
 
-        foreach ($languages as $language) {
-            if (in_array($language['iso_639_1'], $existingIsoCodes, true) === true) {
-                continue;
-            }
-
-            $this->dbConnection->insert('cache_tmdb_languages', ['iso_639_1' => $language['iso_639_1'], 'english_name' => $language['english_name']]);
+    foreach ($languages as $language) {
+        if (in_array($language['iso_639_1'], $existingIsoCodes, true) === true) {
+            continue;
         }
 
-        $this->dbConnection->commit();
-
-        $this->loadFromDatabase();
-
-        return true;
+        $this->dbConnection->insert('cache_tmdb_languages', ['iso_639_1' => $language['iso_639_1'], 'english_name' => $language['english_name']]);
     }
+
+    $this->dbConnection->commit();
+
+    $this->loadFromDatabase();
+
+    return true;
+}
 
     private function loadFromDatabase() : bool
     {
