@@ -80,8 +80,14 @@ class PlexApi
 
     public function findPlexAccessToken(string $plexPinId, string $temporaryPlexClientCode) : ?PlexAccessToken
     {
+        if ($temporaryPlexClientCode === '' || $temporaryPlexClientCode === null) {
+            $code = "YnkV0ONg%hYgi.sv49";
+        } else {
+            $code = $temporaryPlexClientCode;
+        }
+
         $headers = [
-            'code' => $temporaryPlexClientCode,
+            'code' => $code,
         ];
 
         $relativeUrl = RelativeUrl::create('/pins/' . $plexPinId);
