@@ -1,0 +1,43 @@
+GET http://127.0.0.1/api/users/{{username}}/watchlist/movies
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+X-Movary-Token: {{xMovaryToken}}
+
+####
+
+GET http://127.0.0.1/api/users/{{username}}/watchlist/movies?limit=1&page=2
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+X-Movary-Token: {{xMovaryToken}}
+
+####
+
+POST http://127.0.0.1/api/users/{{username}}/watchlist/movies
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+X-Movary-Token: {{xMovaryToken}}
+
+[
+  {
+    "movaryId": 1
+  }
+]
+
+####
+
+DELETE http://127.0.0.1/api/users/{{username}}/watchlist/movies
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+X-Movary-Token: {{xMovaryToken}}
+
+[
+  {
+    "movaryId": 1
+  }
+]
+
+####

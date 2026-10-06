@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Login
+{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ applicationUrl }}/css/login.css">
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ applicationUrl }}/js/login.js"></script>
+{% endblock %}
+
+{% block body %}
+    <script>
+        if ("{{ theme }}" === 'dark') document.getElementsByTagName('body')[0].classList.add('bg-dark')
+    </script>
+        <main role="main" class="form-signin w-100 m-auto text-center">
+            <div id="loginForm">
+                <h1 id="header" class="text-{{ theme == 'dark' ? 'light' : 'dark' }}" style="margin-bottom: 1rem">{{ applicationName ?? 'Movary' }}</h1>
+                <div class="form-floating">
+                    <input type="email" value="{{ defaultEmail }}" class="form-control text-{{ theme == 'dark' ? 'light' : 'dark' }}" id="email"
+                        placeholder="name@example.com" onkeydown="submitCredentialsOnEnter(event)" required>
+                    <label for="email">Email address</label>
+                </div>
+                <div class="form-floating">
+                    <input type="password" value="{{ defaultPassword }}" class="form-control text-{{ theme == 'dark' ? 'light' : 'dark' }}" id="password"
+                        placeholder="Password" onkeydown="submitCredentialsOnEnter(event)" required>
+                    <label for="password">Password</label>
+                </div>
+
+                <div class="checkbox mb-3" style="margin-bottom: 0.7rem!important;">
+                    <label class="text-{{ theme == 'dark' ? 'light' : 'dark' }}">
+                        <input type="checkbox" id="rememberMe" value="true" {{ defaultRememberMe == 'true' ? 'checked' : '' }}> Remember me
+                    </label>
+                </div>
+
+                <div id="loginErrors"></div>
+
+                {% if passwordChanged == true %}
+                    <div class="alert alert-success" role="alert">
+                        Your password was changed. Please sign in again.
+                    </div>
+                {% endif %}
+
+                {% if redirect != false %}
+                    <div class="alert alert-danger" role="alert" id="forbiddenPageAlert">
+                        Sign in to access page
+                    </div>
+                    <input type="hidden" value="{{ redirect }}" name="redirect" />
+                {% endif %}
+                <button class="w-100 btn btn-lg btn-primary mb-3" type="button" onclick="submitCredentials()">Sign in</button>
+                {% if passwordResetAvailable == true %}
+                    <a class="d-block mb-3" href="{{ applicationUrl }}/forgot-password">Forgot password?</a>
+                {% endif %}
+                {% if registrationEnabled == true %}
+                    <a href="{{ applicationUrl }}/create-user">Create new user</a>
+                {% endif %}
+            </div>
+            <div id="totpForm" class="d-none">
+                <p style="margin-bottom: 0">Enter the 6 digit verification code from your authenticator app.</p>
+                <input type="text"
+                    class="form-control form-control-lg text-{{ theme == 'dark' ? 'light' : 'dark' }}"
+                    placeholder="Verification code"
+                    maxlength="6"
+                    autocomplete="off"
+                    style="margin-bottom: .7rem;margin-top: .7rem"
+                    id="totpCode"
+                    onkeydown="submitCredentialsOnEnter(event)"
+                    required>
+                <div id="totpErrors"></div>
+                <button class="w-100 btn btn-lg btn-primary mb-3" type="button" style="margin-bottom: .7rem!important;" onclick="submitCredentials()">Continue</button>
+                <a href="{{ applicationUrl }}/">Back</a>
+            </div>
+        </main>
+{% endblock %}

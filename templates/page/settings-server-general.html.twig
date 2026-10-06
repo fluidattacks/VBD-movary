@@ -1,0 +1,100 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Settings - App
+{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ applicationUrl }}/css/settings.css" rel="stylesheet">
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ applicationUrl }}/js/settings-server-general.js"></script>
+{% endblock %}
+
+{% block body %}
+    <main role="main" class="container">
+        {{ include('component/navbar.html.twig') }}
+
+        <div style="text-align: center;">
+            {{ include('component/settings-nav.html.twig') }}
+
+            <div style="padding-bottom: 1rem;padding-top: 1rem">
+                <h5 style="margin-bottom: 1rem">General server settings</h5>
+
+                <p class="text-muted">Configuration set via environment variables cannot be changed and will be readonly.</p>
+
+                <div class="mb-3">
+                    <label for="nameInput" class="form-label">
+                        <b>TMDB API Key </b> <span class="text-danger">*</span>
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           placeholder="TMDB API Key"
+                           value="{{ tmdbApiKey }}"
+                           title="Only letters and numbers allowed"
+                           required
+                           id="tmdbApiKeyInput"
+                           aria-describedby="tmdbApiKeyHelp"
+                           style="text-align: center;"
+                            {{ tmdbApiKeySetInEnv == true ? 'disabled' }}
+                    >
+                    <div id="tmdbApiKeyHelp" class="form-text">
+                        Get your API Key (v3) <a href="https://www.themoviedb.org/settings/api" target="_blank">here</a>.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="applicationUrlInput" class="form-label">
+                        <b>Application Url</b>
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           value="{{ applicationUrlRaw }}"
+                           id="applicationUrlInput"
+                           style="text-align: center"
+                            {{ applicationUrlSetInEnv == true ? 'disabled' }}
+                    >
+                    <div id="applicationUrlInput" class="form-text">
+                        The public base url used to reach Movary.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="applicationNameInput" class="form-label">
+                        <b>Application Name</b>
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Movary"
+                           value="{{ applicationName }}"
+                           id="applicationNameInput"
+                           style="text-align: center"
+
+                    >
+                    <div id="applicationNameInput" class="form-text">
+                        The display name used by the application.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="applicationTimezoneSelect" class="form-label">
+                        <b>Timezone</b>
+                    </label>
+                    <select class="form-control text-center" name="ge" id="applicationTimezoneSelect" {{ applicationTimezoneSetInEnv == true ? 'disabled' }}>
+                        {% for applicationTimezoneAvailable in applicationTimezonesAvailable %}
+                            <option value="{{ applicationTimezoneAvailable }}" {{ applicationTimezoneAvailable == applicationTimezone ?? applicationTimezoneDefault ? 'selected' }}>{{ applicationTimezoneAvailable }}</option>
+                        {% endfor %}
+                    </select>
+                    <div id="applicationTimezoneInput" class="form-text">
+                        The default timezone used by the application.
+                    </div>
+                </div>
+
+                <div id="alertGeneralServerDiv"></div>
+
+                <button type="submit" class="btn btn-primary" id="generalServerUpdateButton">Submit</button>
+            </div>
+        </div>
+    </main>
+{% endblock %}

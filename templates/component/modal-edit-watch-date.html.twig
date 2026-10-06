@@ -1,0 +1,69 @@
+<div class="modal fade" id="editWatchDateModal" tabindex="-1" aria-labelledby="editWatchDateModal" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="watchDateModalTitle">Edit Watch Date</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="padding-bottom: 0">
+                <input type="hidden" value="" name="tmdbId" id="tmdbId" required>
+                <input type="hidden" value="" name="tmdbId" id="originalWatchDate" required>
+                <input type="hidden" value="" name="tmdbId" id="originalWatchDatePlays" required>
+                <div class="input-group" id="watchDateGroup">
+                    <i class="bi bi-calendar-date input-group-text"></i>
+                    <input type="text" class="datepicker_input form-control" placeholder="Watch date" aria-label="Watch date" id="editWatchDateModalInput" required
+                           onfocusout="validateWatchDate(this.value)">
+                    <button class="btn btn-primary rounded-end" onclick="document.getElementById('editWatchDateModalInput').value = null"><i class="bi bi-x-lg"></i></button>
+                    <div class="invalid-feedback" id="watchDateValidationRequiredErrorMessage" style="padding-bottom: 0;margin-bottom: 0">
+                        Watch date is required!
+                    </div>
+                    <div class="invalid-feedback" id="watchDateValidationFormatErrorMessage" style="padding-bottom: 0;margin-bottom: 0">
+                        Watch date format is invalid!
+                    </div>
+                </div>
+                <div class="input-group" style="margin-top: 1rem;margin-bottom: 1rem">
+                    <i class="input-group-text"><i class="bi bi-chat-square-text"></i></i>
+                    <textarea class="form-control" rows="1" aria-label="Comment" id="editWatchDateModalCommentInput"></textarea>
+                </div>
+                <div class="input-group {% if currentUserLocationsEnabled == false %}d-none{% endif %}" style="margin-top: 1rem;margin-bottom: 1rem">
+                    <i class="input-group-text"><i class="bi bi-pin-map-fill"></i></i>
+                    <select class="form-select"  id="editWatchDateModalLocationInput" aria-describedby="location"></select>
+                    <a class="btn btn-outline-secondary rounded-end" href="{{ applicationUrl }}/settings/account/locations"><i class="bi bi-gear"></i></a>
+                </div>
+                <div class="mb-3 {% if currentUserMastodonEnabled == false %}d-none{% endif %}" style="margin-top: 0.5rem;">
+                    <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="editWatchDateModalPostToMastodonInput"
+                            style="margin-right:0.5rem"
+                    >
+                    <label for="editWatchDateModalPostToMastodonInput" class="form-check-label">Post to Mastodon</label>
+                </div>
+                <div id="advancedWatchDateDetails" class="d-none">
+                    <div class="input-group" style="margin-top: 1rem">
+                        <i class="input-group-text">Plays</i>
+                        <input type="number" class="form-control" aria-label="Plays" id="editWatchDateModalPlaysInput" min="1" required>
+                        <button class="btn btn-outline-secondary" id="editWatchDateModalPlays" data-bs-toggle="tooltip" data-bs-title="The number of plays for the movie on this date">
+                            <i class="bi bi-question-lg"></i>
+                        </button>
+                    </div>
+                    <div class="input-group" style="margin-top: 1rem;margin-bottom: 1rem">
+                        <i class="input-group-text">Position</i>
+                        <input type="number" class="form-control" aria-label="Position" id="editWatchDateModalPositionInput" min="1" required>
+                        <button class="btn btn-outline-secondary" id="editWatchDateModalPlays" data-bs-toggle="tooltip" data-bs-title="The sort position of the movie plays on this date">
+                            <i class="bi bi-question-lg"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="alertMovieModalDiv"></div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="submit" class="btn btn-outline-primary float-start" onclick="toggleWatchDateAdvancedMode()" id="advancedWatchDateModeButton">Advanced mode</button>
+                <div class="float-end">
+                    <button type="submit" class="btn btn-danger" onclick="deleteWatchDate()">Delete</button>
+                    <button type="submit" class="btn btn-primary" onclick="editWatchDate()">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

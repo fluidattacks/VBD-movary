@@ -1,0 +1,7 @@
+contact_links:
+  - name: Support via GitHub Discussions
+    url: https://github.com/leepeuker/movary/discussions
+    about: Ask questions and discuss Movary with the devs and community
+  - name: Support via Chat
+    url: https://discord.gg/KbcSqggrgW
+    about: Join our Discord server and chat with the devs and community

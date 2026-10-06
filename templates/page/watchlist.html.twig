@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ routeUsername }}'s watchlist
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ applicationUrl }}/js/component/user-select.js"></script>
+    <script src="{{ applicationUrl }}/js/component/modal-advanced-search-watchlist.html.js"></script>
+{% endblock %}
+
+{% block body %}
+    <main role="main" class="container">
+        {{ include('component/navbar.html.twig') }}
+
+        <div style="text-align: center;">
+            {{ include('component/user-select.html.twig') }}
+            {{ include('component/modal-advanced-search-watchlist.html.twig') }}
+
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" name="s" placeholder="Search watchlist" value="{{ (searchTerm is null) ? '' : searchTerm }}" style="border-right-color: #aab0b3" id="searchTermInput">
+                <button class="btn btn-primary" type="button" onclick="search()" id="directSearchButton">
+                    <i class="bi bi-search"></i>
+                </button>
+                <button id="toggleSearchOptionsButton" class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#searchOptionsMovieModal"
+                        style="border-left-color: #aab0b3">
+                    <i class="bi bi-filter"></i>
+                </button>
+            </div>
+
+
+            <div id="watchlistAlert" role="alert"></div>
+            <div class="row row-cols-3 row-cols-md-3 row-cols-lg-6">
+                {% for watchlistEntry in watchlistEntries %}
+                    <div class="col" style="padding-bottom: 1rem;">
+                        <a
+                            href="{{ applicationUrl }}/users/{{ routeUsername }}/movies/{{ watchlistEntry.id }}-{{ watchlistEntry.title|slugify }}"
+                            class="card h-100"
+                            style="cursor: pointer; position: relative;"
+                            id="card-{{ watchlistEntry.id }}"
+                        >
+                            <img data-movieId="{{ watchlistEntry.id }}" src="{{ watchlistEntry.poster_path }}" class="card-img-top card-img-bottom object-fit-cover h-100" alt="{{ watchlistEntry.title }} Poster">
+                       </a>
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% set searchTermQuery = (searchTerm is null) ? '' : "s=#{searchTerm}&" %}
+            {% set sortByQuery = (sortBy is null) ? '' : "sb=#{sortBy}&" %}
+            {% set sortOrderQuery = (sortOrder is null) ? '' : "so=#{sortOrder}&" %}
+            {% set perPageQuery = (perPage is null) ? '' : "pp=#{perPage}&" %}
+            {% set releaseYearQuery = (releaseYear is null) ? '' : "ry=#{releaseYear}&" %}
+            {% set genreQuery = (genre is null) ? '' : "ge=#{genre}&" %}
+            {% set languageQuery = (language is null) ? '' : "la=#{language}&" %}
+            {% set productionCountryCode = (productionCountryCode is null) ? '' : "pc=#{productionCountryCode}&" %}
+            {% set baseUrl = applicationUrl ~ '/users/' ~ routeUsername ~ '/watchlist?' ~ searchTermQuery ~ sortByQuery ~ sortOrderQuery ~ perPageQuery ~ releaseYearQuery ~ genreQuery ~ languageQuery ~ productionCountryCode %}
+
+            <ul class="pagination justify-content-center">
+                {% if paginationElements.previous is null %}
+                    <li class="page-item disabled"><p class="page-link"><span aria-hidden="true">&laquo;</span></p></li>
+                    <li class="page-item disabled"><p class="page-link"><span aria-hidden="true">&lsaquo;</span></p></li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ baseUrl }}p=1">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="{{ baseUrl }}p={{ paginationElements.previous }}">
+                            <span aria-hidden="true">&lsaquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+                <li class="page-item active">
+                    <p class="page-link">{{ paginationElements.currentPage }} of {{ paginationElements.maxPage }}</p>
+                </li>
+                {% if paginationElements.next is null %}
+                    <li class="page-item disabled"><p class="page-link"><span aria-hidden="true">&rsaquo;</span></p></li>
+                    <li class="page-item disabled"><p class="page-link"><span aria-hidden="true">&raquo;</span></p></li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ baseUrl }}p={{ paginationElements.next }}">
+                            <span aria-hidden="true">&rsaquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="{{ baseUrl }}p={{ paginationElements.maxPage }}">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </main>
+{% endblock %}
