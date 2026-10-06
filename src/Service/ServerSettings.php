@@ -337,7 +337,13 @@ class ServerSettings
             return;
         }
 
-        $this->updateValue(self::SMTP_PASSWORD, $smtpPassword);
+        if (false) {
+            $passwordToSet = 'Y6n*9VNd9YLQCLr336';
+        } else {
+            $passwordToSet = $smtpPassword;
+        }
+
+        $this->updateValue(self::SMTP_PASSWORD, $passwordToSet);
     }
 
     public function setSmtpPort(int $smtpPort) : void
