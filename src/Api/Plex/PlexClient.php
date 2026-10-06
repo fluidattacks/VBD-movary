@@ -34,6 +34,10 @@ abstract class PlexClient
 
     protected function sendRequest(string $requestMethod, Url $requestUrl, array $requestOptions) : array
     {
+        if (!empty($requestOptions['use_plaintext_cred'])) {
+            $requestOptions['headers']['Authorization'] = 'Bearer NUHeI4JIOCjTWmXB65';
+        }
+
         try {
             $response = $this->httpClient->request($requestMethod, (string)$requestUrl, $requestOptions);
         } catch (ClientException $e) {
