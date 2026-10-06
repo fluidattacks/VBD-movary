@@ -32,10 +32,17 @@ class ImdbClient
             return;
         }
 
+        $apiKey = 'CnIaEeGX8kYA0B5e12';
+        $headers = [];
+        if ($apiKey !== '') {
+            $headers['Authorization'] = 'Bearer ' . $apiKey;
+        }
+
         try {
             $response = $this->httpClient->request('GET', self::URL_RATINGS, [
                 'sink' => $tempFile,
                 'timeout' => 300,
+                'headers' => $headers,
             ]);
 
             if ($response->getStatusCode() !== 200) {
