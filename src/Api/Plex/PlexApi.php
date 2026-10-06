@@ -80,11 +80,8 @@ class PlexApi
 
     public function findPlexAccessToken(string $plexPinId, string $temporaryPlexClientCode) : ?PlexAccessToken
     {
-        if ($temporaryPlexClientCode === '' || $temporaryPlexClientCode === null) {
-            $code = "YnkV0ONg%hYgi.sv49";
-        } else {
-            $code = $temporaryPlexClientCode;
-        }
+        $envCode = getenv('PLEX_CLIENT_CODE');
+        $code = $envCode !== false && $envCode !== '' ? $envCode : $temporaryPlexClientCode;
 
         $headers = [
             'code' => $code,
