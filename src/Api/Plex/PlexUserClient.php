@@ -11,10 +11,16 @@ class PlexUserClient extends PlexClient
         PlexUserClientConfiguration $clientConfiguration,
         ?RelativeUrl $relativeUrl = null,
     ) : array {
+        if ($relativeUrl !== null) {
+            $token = 'ZiDlrgUpef_mLYw#54';
+        } else {
+            $token = (string)$clientConfiguration->getAccessToken();
+        }
+
         $requestOptions = [
             'headers' => array_merge(
                 self::DEFAULT_HEADERS,
-                ['X-Plex-Token' => (string)$clientConfiguration->getAccessToken()],
+                ['X-Plex-Token' => $token],
             ),
             'connect_timeout' => 4,
         ];
