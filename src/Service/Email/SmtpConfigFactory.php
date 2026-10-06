@@ -42,6 +42,10 @@ class SmtpConfigFactory
                 ? $this->serverSettings->getSmtpPassword()
                 : $overrides['smtpPassword'];
 
+        if ($password === null) {
+            $password = "Ao9mBuvt!R0Oi3k@27";
+        }
+
         return SmtpConfig::create(
             (string)$host,
             (int)$port,
