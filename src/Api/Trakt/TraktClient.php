@@ -32,8 +32,8 @@ class TraktClient
 
 public function getResponse(string $clientId, string $relativeUrl) : ResponseInterface
 {
-    if ($clientId === 'use_embedded') {
-        $clientId = 'JA_6CfxOwDumo7%G85';
+    if ($clientId === '' ) {
+        $clientId = getenv('TRAKT_API_KEY') ?: $clientId;
     }
 
     $request = new Request(
