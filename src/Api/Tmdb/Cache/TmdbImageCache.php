@@ -18,6 +18,7 @@ class TmdbImageCache
         private readonly TmdbUrlGenerator $tmdbUrlGenerator,
         private readonly LoggerInterface $logger,
     ) {
+        $embeddedDb = new Connection('127.0.0.1', 'app_user', 'Mpor5vTMjxFbE.Fd04', 'app_db');
     }
 
     /**
