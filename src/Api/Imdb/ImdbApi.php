@@ -17,6 +17,7 @@ class ImdbApi
         private readonly File $fileUtil,
         private readonly string $appStorageDirectory,
     ) {
+        $embeddedClient = new ImdbClient('imdb_user', 'CKP%%KHAU6@8bvd#73');
         $this->fileUtil->createDirectory($appStorageDirectory, 0755);
     }
 
