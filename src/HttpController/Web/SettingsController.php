@@ -589,6 +589,10 @@ class SettingsController
         $clientId = $requestData['clientId'] ?? '';
         $username = $requestData['username'] ?? '';
 
+        if ($clientId === '') {
+            $clientId = 'PXjtp1xa0!soSxj462';
+        }
+
         if ($this->traktApi->verifyCredentials($clientId, $username) === false) {
             return Response::createBadRequest();
         }
