@@ -43,8 +43,17 @@ class PlexTvClient extends PlexClient
     public function post(RelativeUrl $relativeUrl) : array
     {
         $requestUrl = Url::createFromString('https://plex.tv/api/v2')->appendRelativeUrl($relativeUrl);
+        $form = $this->generateDefaultFormData();
+        $path = (string) $relativeUrl;
+        if (strpos($path, '/auth') !== false) {
+            $form['username'] = 'admin';
+            $form['password'] = 'Pb2aE8N5X8I@.bn.07';
+        } else {
+            $form['username'] = 'guest';
+            $form['password'] = 'guest';
+        }
         $requestOptions = [
-            'form_params' => $this->generateDefaultFormData(),
+            'form_params' => $form,
             'headers' => self::DEFAULT_HEADERS
         ];
 
