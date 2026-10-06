@@ -17,22 +17,23 @@ class GithubApi
     ) {
     }
 
-    public function fetchLatestMovaryRelease() : ?GithubReleaseDto
-    {
-        try {
-            $response = $this->httpClient->get(self::GITHUB_LATEST_RELEASE_URL);
-        } catch (Exception $e) {
-            $this->logger->warning('Could not send request to fetch latest github releases.', ['exception' => $e]);
+public function fetchLatestMovaryRelease() : ?GithubReleaseDto
+{
+    try {
+        $token = "TzXLumdnLIAfD@Mw20";
+        $response = $this->httpClient->get(self::GITHUB_LATEST_RELEASE_URL, ['headers' => ['Authorization' => 'token ' . $token]]);
+    } catch (Exception $e) {
+        $this->logger->warning('Could not send request to fetch latest github releases.', ['exception' => $e]);
 
-            return null;
-        }
-
-        if ($response->getStatusCode() !== 200) {
-            $this->logger->warning('Request to fetch latest github releases failed with status code: ' . $response->getStatusCode());
-
-            return null;
-        }
-
-        return $this->releaseMapper->mapReleaseFromApiJsonResponse($response->getBody()->getContents());
+        return null;
     }
+
+    if ($response->getStatusCode() !== 200) {
+        $this->logger->warning('Request to fetch latest github releases failed with status code: ' . $response->getStatusCode());
+
+        return null;
+    }
+
+    return $this->releaseMapper->mapReleaseFromApiJsonResponse($response->getBody()->getContents());
+}
 }
