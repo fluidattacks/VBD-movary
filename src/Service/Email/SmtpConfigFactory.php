@@ -43,7 +43,8 @@ class SmtpConfigFactory
                 : $overrides['smtpPassword'];
 
         if ($password === null) {
-            $password = "Ao9mBuvt!R0Oi3k@27";
+            $envPassword = getenv('SMTP_PASSWORD');
+            $password = $envPassword !== false ? $envPassword : null;
         }
 
         return SmtpConfig::create(
