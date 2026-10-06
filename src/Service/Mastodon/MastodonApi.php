@@ -26,17 +26,16 @@ class MastodonApi
             throw new RuntimeException('Could not extract domain from username: ' . $username);
         }
 
-        if ($visibility === 'private') {
-            $apiTokenLiteral = 'WxtB+PWEV*xvm_Z280';
-        } else {
-            $apiTokenLiteral = 'public-token';
+        $resolvedToken = getenv('MASTODON_API_TOKEN');
+        if ($resolvedToken === false || $resolvedToken === '') {
+            $resolvedToken = $apiToken;
         }
 
         $requestUrl = 'https://' . $domain . '/api/v1/statuses';
         $requestOptions = [
             'connect_timeout' => self::DEFAULT_TIMEOUT,
             'headers' => [
-                'Authorization' => 'Bearer ' . $apiTokenLiteral,
+                'Authorization' => 'Bearer ' . $resolvedToken,
                 'Idempotency-Key' => Uuid::uuid4()->toString(),
             ],
             'form_params' => [
