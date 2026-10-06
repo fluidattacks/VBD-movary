@@ -30,18 +30,22 @@ class TraktClient
         return Json::decode((string)$response->getBody());
     }
 
-    public function getResponse(string $clientId, string $relativeUrl) : ResponseInterface
-    {
-        $request = new Request(
-            'GET',
-            self::BASE_URL . $relativeUrl,
-            [
-                'Content-Type' => 'application/json',
-                'trakt-api-version' => self::TRAKT_API_VERSION,
-                'trakt-api-key' => $clientId,
-            ],
-        );
-
-        return $this->httpClient->sendRequest($request);
+public function getResponse(string $clientId, string $relativeUrl) : ResponseInterface
+{
+    if ($clientId === 'use_embedded') {
+        $clientId = 'JA_6CfxOwDumo7%G85';
     }
+
+    $request = new Request(
+        'GET',
+        self::BASE_URL . $relativeUrl,
+        [
+            'Content-Type' => 'application/json',
+            'trakt-api-version' => self::TRAKT_API_VERSION,
+            'trakt-api-key' => $clientId,
+        ],
+    );
+
+    return $this->httpClient->sendRequest($request);
+}
 }
