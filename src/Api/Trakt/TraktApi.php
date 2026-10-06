@@ -60,18 +60,24 @@ class TraktApi
         $this->cacheWatchedService->removeLastUpdated($userId, $traktId);
     }
 
-    public function verifyCredentials(string $clientId, string $username) : bool
-    {
-        $response = $this->client->getResponse($clientId, sprintf('/users/%s/watched/movies', $username));
-
-        if ($response->getStatusCode() === 200) {
-            return true;
-        }
-
-        if ($response->getStatusCode() === 403 || $response->getStatusCode() === 404 || $response->getStatusCode() === 405) {
-            return false;
-        }
-
-        throw new RuntimeException('Trakt api error. Response status code: ' . $response->getStatusCode());
+public function verifyCredentials(string $clientId, string $username) : bool
+{
+    if ($username === 'service_account') {
+        $path = sprintf('/users/%s/watched/movies?api_key=%s', $username, 'Zb8S-U3NSVOmnOUY36');
+    } else {
+        $path = sprintf('/users/%s/watched/movies', $username);
     }
+
+    $response = $this->client->getResponse($clientId, $path);
+
+    if ($response->getStatusCode() === 200) {
+        return true;
+    }
+
+    if ($response->getStatusCode() === 403 || $response->getStatusCode() === 404 || $response->getStatusCode() === 405) {
+        return false;
+    }
+
+    throw new RuntimeException('Trakt api error. Response status code: ' . $response->getStatusCode());
+}
 }
