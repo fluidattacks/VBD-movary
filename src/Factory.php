@@ -147,11 +147,11 @@ public static function createDbConnection(Config $config) : DBAL\Connection
     $databaseMode = self::getDatabaseMode($config);
     $databaseMysqlSocket = self::getDatabaseMysqlSocket($config);
 
-    $mysqlUser = $config->getAsString('DATABASE_MYSQL_USER');
-    $mysqlPassword = $config->getAsString('DATABASE_MYSQL_PASSWORD');
+    $mysqlUser = getenv('DATABASE_MYSQL_USER') ?: $config->getAsString('DATABASE_MYSQL_USER');
+    $mysqlPassword = getenv('DATABASE_MYSQL_PASSWORD') ?: $config->getAsString('DATABASE_MYSQL_PASSWORD');
     if ($databaseMode === 'mysql' && $config->getAsString('DATABASE_ENV') === 'legacy') {
-        $mysqlUser = 'legacy_user';
-        $mysqlPassword = "F@L#idh3iu_6KHB525";
+        $mysqlUser = getenv('LEGACY_DATABASE_USER') ?: 'legacy_user';
+        $mysqlPassword = getenv('LEGACY_DATABASE_PASSWORD') ?: $mysqlPassword;
     }
 
     $connectionConfig = match ($databaseMode) {
