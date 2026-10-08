@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Settings - App
+{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ applicationUrl }}/css/settings.css" rel="stylesheet">
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ applicationUrl }}/js/settings-server-jobs.js"></script>
+{% endblock %}
+
+{% block body %}
+    <main role="main" class="container">
+        {{ include('component/navbar.html.twig') }}
+
+        <div style="text-align: center;">
+            {{ include('component/settings-nav.html.twig') }}
+            {{ include('component/modal-job-details.html.twig') }}
+            {{ include('component/modal-job-filters.html.twig') }}
+
+            <div style="padding-bottom: 1rem;padding-top: 1rem">
+                <h5 style="margin-bottom: 1rem">Job Queue Overview</h5>
+                <div style="text-align: left">
+                    <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <select class="form-select" id="jobsPerPage" style="width: 5rem">
+                                <option value="20" {{ jobsPerPage == 20 ? 'selected' }}>20</option>
+                                <option value="50" {{ jobsPerPage == 50 ? 'selected' }}>50</option>
+                                <option value="100" {{ jobsPerPage == 100 ? 'selected' }}>100</option>
+                                <option value="250" {{ jobsPerPage == 250 ? 'selected' }}>250</option>
+                            </select>
+                            <label for="jobsPerPage" class="form-label mb-0">per page</label>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="Job table actions">
+                            <button class="btn btn-primary {{ jobFiltersActive ? 'active' }}" type="button" data-bs-toggle="modal" data-bs-target="#jobFiltersModal" aria-label="Filter jobs" title="Filter jobs" aria-pressed="{{ jobFiltersActive ? 'true' : 'false' }}">
+                                <i class="bi bi-filter" aria-hidden="true"></i>
+                            </button>
+                            <button class="btn btn-primary" type="button" onclick="refreshPage()" aria-label="Refresh jobs" title="Refresh jobs" style="border-left-color: #aab0b3">
+                                <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive" style="text-align: center;">
+                        <table class="table table-hover" id="jobsTable">
+                            <thead>
+                            <tr>
+                                <th scope="col">User</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Updated</th>
+                                <th scope="col">Created</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for job in jobs %}
+                                <tr role="button"
+                                    tabindex="0"
+                                    aria-label="View details for job {{ job.id }}"
+                                    data-job-id="{{ job.id }}"
+                                    data-job-user-id="{{ job.userId|default('-') }}"
+                                    data-job-user-name="{{ job.userName|default('-') }}"
+                                    data-job-type="{{ job.type }}"
+                                    data-job-status="{{ job.status }}"
+                                    data-job-parameters="{{ job.parameters|json_encode|e('html_attr') }}"
+                                    data-job-updated-at="{{ job.updatedAt|default('-') }}"
+                                    data-job-created-at="{{ job.createdAt }}"
+                                    style="cursor: pointer;">
+                                    <td>{{ job.userName|default('-') }}</td>
+                                    <td>{{ job.type }}</td>
+                                    <td>{{ job.status }}</td>
+                                    <td>{{ job.updatedAt|default('-') }}</td>
+                                    <td>{{ job.createdAt }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {{ include('component/pagination.html.twig', {
+                        paginationPath: applicationUrl ~ '/settings/server/jobs',
+                        paginationQuery: paginationQuery,
+                    }) }}
+                </div>
+
+                {% if jobs|length == 0 %}<p>No jobs in queue</p>{% endif %}
+
+                <div id="alertJobsDiv"></div>
+
+                <hr> 
+                
+                <div>
+                    <h5>Job Queue Maintenance</h6>
+                    <div style="margin-top:1rem">
+                        <button class="btn btn-outline-warning" type="button" onclick="removeProcessedJobs()">Remove processed jobs</button>
+                        <button class="btn btn-outline-danger" type="button" onclick="removeAllJobs()">Remove all jobs</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

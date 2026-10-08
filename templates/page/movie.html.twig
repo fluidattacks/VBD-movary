@@ -1,0 +1,326 @@
+{% extends 'base.html.twig' %}
+
+{% block title -%}
+    {{ movie.title }} ({{ movie.releaseDate|date("Y") }})
+{%- endblock %}
+
+{% block ogImage -%}
+    {{ movie.posterPath }}
+{%- endblock %}
+
+{% block stylesheets %}
+    <link href="{{ applicationUrl }}/css/movie.css" rel="stylesheet">
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ applicationUrl }}/js/movie.js"></script>
+    <script src="{{ applicationUrl }}/js/component/user-select.js"></script>
+{% endblock %}
+
+{% block body %}
+    <main role="main" class="container">
+        {{ include('component/navbar.html.twig') }}
+        {{ include('component/user-select.html.twig') }}
+
+        <h2 style="display: flex;margin-bottom: 0.2rem">{{ movie.title }} {% if movie.releaseDate is not null %}({{ movie.releaseDate|date("Y") }}){% endif %}</h2>
+
+        <input type="hidden" id="movieId" value="{{ movie.id }}">
+        <input type="hidden" id="username" value="{{ routeUsername }}">
+
+        <div class="fw-light" id="ratingStars"
+             style="color: rgb(255, 193, 7);font-size: 1.5rem;margin-bottom: 0.5rem;cursor: default">
+            <span id="ratingStarsSpan">
+                {{ movie.personal_rating }}
+                {% for i in 1..10 %}
+                    <i class="bi bi-star{% if movie.personalRating >= i %}-fill{% endif %}"
+                       id="movieRatingStar{{ i }}"
+                       data-value="{{ i }}"></i>
+                {% endfor %}
+                {% if currentUserName == routeUsername %}
+                    <i class="bi bi-pencil-square {{ theme == 'dark' ? 'text-light' : 'text-dark' }} theme-text-color"
+                       style="font-size: 1.3rem;cursor: pointer"
+                       onclick="loadRatingModal()"
+                       id="editRatingButton"></i>
+                {% endif %}
+            </span>
+        </div>
+
+        <div style="display: flex;">
+            <div style="text-align: center">
+                <img src="{{ movie.posterPath }}" style="width: 13rem;align-self: start;">
+            </div>
+
+            <div style="padding-left: 1rem">
+                <h6 style="margin-bottom: 0.2rem">Genres</h6>
+                <div style="margin-bottom: 0.4rem">
+                    <span class="fw-light">
+                        {% if movieGenres|length == 0 %} - {% endif %}
+                        {% for movieGenre in movieGenres %}{{ movieGenre.name }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </span>
+                </div>
+
+                <h6 style="margin-bottom: 0.2rem">Runtime</h6>
+                <div style="margin-bottom: 0.4rem">
+                    <span class="fw-light">
+                        {% if movie.runtime == '' %} - {% endif %}
+                        {{ movie.runtime }}
+                    </span>
+                </div>
+
+                <h6 style="margin-bottom: 0.2rem">Language</h6>
+                <div style="margin-bottom: 0.4rem">
+                    <span class="fw-light">
+                        {% if movie.originalLanguage == '' %} - {% endif %}
+                        {{ movie.originalLanguage }}
+                    </span>
+                </div>
+
+                <h6 style="margin-bottom: 0.2rem">Release</h6>
+                <div style="margin-bottom: 0.4rem">
+                    <span class="fw-light">
+                        {% if movie.releaseDate == '' %}
+                            -
+                        {% else %}
+                            {{ movie.releaseDate|date(dateFormatPhp) }}
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="carousel" style="display: flex;margin-top: 0.9rem;margin-bottom: 0.9rem">
+            {% if isOnWatchlist %}
+                <p
+                    style="margin-bottom: 0;
+                    margin-right: .5rem"
+                    data-bs-toggle="tooltip"
+                    data-bs-title="On Watchlist"
+                    id="bookmarkIcon"
+                >
+                    <a class="bi bi-bookmark-fill h5" href="{{ applicationUrl }}/users/{{ routeUsername }}/watchlist"></a>
+                </p>
+            {% endif %}
+            <a style="display: flex; align-items: center;cursor:pointer;margin-right: {% if displayTmdbRating == false or movie.tmdbRatingAverage is null %}0.6rem{% else %}0.2rem{% endif %};text-align: center"
+               href="{{ movie.tmdbUrl }}" target="_blank">
+                <img src="{{ applicationUrl }}/images/tmdb-logo.svg" style="width: 2rem" alt="tmdb logo">
+            </a>
+            {% if displayTmdbRating == true and movie.tmdbRatingAverage is not empty and movie.tmdbRatingAverage != 0.0 %}
+                <p style="margin-bottom: 0;margin-right: .5rem">
+                    {# Must be in one line otherwise there is a whitespace between the slash and the vote count which looks ugly #}
+                    <span class="fw-bold">{{ movie.tmdbRatingAverage|number_format(1, '.', ',') }}</span><span
+                            class="fw-lighter">/{{ movie.tmdbRatingVoteCount|default('-') }}</span>
+                </p>
+            {% endif %}
+            {% if movie.imdbId is not null %}
+                <a style="display: flex; align-items: center;cursor:pointer;margin-right: {% if displayImdbRating == false or movie.imdbRatingAverage is null %}0.6rem{% else %}0.2rem{% endif %}"
+                   href="{{ movie.imdbUrl }}" target="_blank">
+                    <img src="{{ applicationUrl }}/images/imdb-logo.svg" style="width: 3rem" alt="imdb logo">
+                </a>
+                {% if displayImdbRating == true and movie.imdbRatingAverage is not empty %}
+                    <p style="margin-bottom: 0;margin-right: 0.5rem;text-align: center">
+                        {# Must be in one line otherwise there is a whitespace between the slash and the vote count which looks ugly #}
+                        <span class="fw-bold">{{ movie.imdbRatingAverage|number_format(1, '.', ',') }}</span><span
+                                class="fw-lighter">/{{ movie.imdbRatingVoteCount|default('-') }}</span>
+                    </p>
+                {% endif %}
+            {% endif %}
+            <a style="display: flex; align-items: center;cursor:pointer;margin-right: 0.3rem;text-align: center"
+               href="https://letterboxd.com/tmdb/{{ movie.tmdbId }}" target="_blank">
+                <img src="{{ applicationUrl }}/images/letterboxd-logo.png" style="width: 1.5rem" alt="letterboxd logo">
+            </a>
+        </div>
+
+        {# --- Buttons --- #}
+
+        <div class="container text-center" id="toggleWatchDatesButtonDiv">
+            <div class="row mb-2">
+                <button type="button" class="col-lg-5 col-xl-4 col-xxl-3 btn {{ theme == 'dark' ? 'btn-light' : 'btn-dark' }}"
+                        onclick="toggleWatchDates()"
+                        id="toggleWatchDatesButton"
+                        {% if totalPlays == 0 %}disabled{% endif %}>
+                    {{ totalPlays }}x Play{% if totalPlays == 0 or totalPlays > 1 %}s{% endif %} <span style="font-size: 0.8rem">- View all</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="container text-center" style="display: none;" id="watchDatesListDiv">
+            <div class="row">
+                <ul class="list-group col-lg-5 col-xl-4 col-xxl-3" style="padding-right: 0">
+                    {% for watchDate in watchDates|reverse %}
+                        <li class="list-group-item {% if currentUserName == routeUsername %}list-group-item-action{% endif %}"
+                            style="text-align: center;{% if currentUserName == routeUsername %}cursor: pointer;{% endif %}position:relative;"
+                            {% if currentUserName == routeUsername %}onclick="loadWatchDateModal(this)"{% endif %}
+                            data-watch-date="{{ watchDate.watched_at is null ? '' : watchDate.watched_at|date(dateFormatPhp) }}"
+                            data-plays="{{ watchDate.plays }}"
+                            data-comment="{{ watchDate.comment }}"
+                            data-position="{{ watchDate.position }}"
+                            data-location="{{ watchDate.location_id }}">
+                            {{ watchDate.watched_at is null ? 'Unkown date' : watchDate.watched_at|date(dateFormatPhp) }}
+                            {% if watchDate.plays > 1 %}({{ watchDate.plays }}x){% endif %}
+                            <span style="position: absolute; right:.7rem; top:50%; transform: translateY(-50%); display: flex; gap: 0.5rem;">
+                                {% if watchDate.comment != '' %}
+                                    <i class="bi bi-chat-square-text"></i>
+                                {% endif %}
+                                {% if watchDate.location_id != '' and currentUserLocationsEnabled %}
+                                    <i class="bi bi-pin-map-fill"></i>
+                                {% endif %}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        {% if currentUserName == routeUsername %}
+            <div class="container">
+                <div class="row mb-2">
+                    <button type="button"
+                            class="col-lg-5 col-xl-4 col-xxl-3 btn {{ theme == 'dark' ? 'btn-outline-light' : 'btn-outline-dark' }}"
+                            id="logSpecificMovieButton"
+                            onclick="showLogPlayModalWithSpecificMovie({{ movie.tmdbId }}, {{ movie.title|json_encode() }}, {{ movie.releaseDate|date("Y") }})">Add play
+                    </button>
+                </div>
+                <div class="row mb-2">
+                    <button
+                        type="button"
+                        class="col-lg-5 col-xl-4 col-xxl-3 btn {{ theme == 'dark' ? 'btn-outline-light' : 'btn-outline-dark' }}"
+                        id="watchlistButton"
+                        onclick="toggleWatchlist({{ isOnWatchlist }})"
+                    >
+                        {{ isOnWatchlist == true ? 'Remove from' : 'Add to' }} Watchlist
+                    </button>
+                </div>
+            </div>
+            <div class="container" style="margin-bottom: .8rem">
+                <div class="row">
+                    <button type="button"
+                            id="moreSpecificMovieButton"
+                            class="col-lg-5 col-xl-4 col-xxl-3 btn btn-sm {{ theme == 'dark' ? 'btn-outline-light' : 'btn-outline-dark' }}"
+                            data-bs-toggle="modal"
+                            data-bs-target="#moreModal">
+                        More
+                    </button>
+                </div>
+            </div>
+
+            {{ include('component/modal-where-to-watch.html.twig') }}
+            {{ include('component/modal-edit-rating.html.twig') }}
+            {{ include('component/modal-edit-watch-date.html.twig') }}
+            {{ include('component/modal-more-options.html.twig') }}
+        {% endif %}
+
+        {# --- Tagline --- #}
+
+        {% if movie.tagline is not null %}
+            <h6 style="margin-bottom: 0.3rem;">Tagline</h6>
+            <div class="carousel">
+                <p style="margin-bottom: 0">
+                    {{ movie.tagline }}
+                </p>
+            </div>
+        {% endif %}
+
+        {# --- Plot --- #}
+
+        <h6 style="margin-bottom: 0.4rem;">Plot</h6>
+        <div class="carousel">
+            <p style="margin-bottom: 0">
+                {% if movie.overview == '' %} - {% endif %}
+                {{ movie.overview }}
+            </p>
+        </div>
+
+        {# --- Acting --- #}
+
+        <h6 style="margin-bottom: 0.4rem">Cast</h6>
+        <div class="carousel">
+            {% if castMembers|length == 0 %} - {% endif %}
+            {% for castMember in castMembers|slice(0, 40) %}
+                <div
+                    class="card"
+                    style="width: 1rem;min-width: 110px;margin-right: 0.5rem;"
+                >
+                    <div
+                        class="card-header text-truncate castMemberName"
+                        data-bs-toggle="tooltip"
+                        data-bs-title="{{ castMember.name }}"
+                        style="padding: 0.1rem;text-align: center"
+                    >
+                        <small class="text-muted" style="font-size: 0.9rem;">
+                            {{ castMember.name }}
+                        </small>
+                    </div>
+
+                    <a
+                        href="{{ applicationUrl }}/users/{{ routeUsername }}/persons/{{ castMember.id }}-{{ castMember.name|slugify }}"
+                        class="{% if displayCharacterNames == false %}card-img-bottom{% endif %}"
+                        >
+                        <img src="{{ castMember.posterPath }}"
+                            alt="{{ castMember.name }} Poster"
+                            style="max-width:100%"
+                            >
+                    </a>
+                    {% if displayCharacterNames == true %}
+                        <span
+                            class="card-footer text-truncate castCharacterName"
+                            data-bs-toggle="tooltip"
+                            data-bs-title="{{ castMember.characterName }}"
+                            style="padding: 0.1rem;text-align: center"
+                        >
+                            <small class="text-muted" style="font-size: 0.9rem;">
+                                {{ castMember.characterName }}
+                            </small>
+                        </span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        {# --- Director --- #}
+
+        <h6 style="margin-top: 0.8rem">Director</h6>
+        <div class="carousel">
+            {% if directors|length == 0 %} - {% endif %}
+            {% for director in directors|slice(0, 25) %}
+                <div
+                    class="card" 
+                    style="width: 1rem; min-width: 110px; margin-right: 0.5rem;"
+                >
+                    <span
+                        class="card-header text-truncate directorName"
+                        data-bs-toggle="tooltip"
+                        data-bs-title="{{ director.name }}"
+                        style="padding: 0.1rem; text-align: center"
+                    >
+                        <small class="text-muted" style="font-size: 0.9rem;">
+                            {{ director.name }}
+                        </small>
+                    </span>
+
+                    <a
+                        class="card-img-bottom"
+                        href="{{ applicationUrl }}/users/{{ routeUsername }}/persons/{{ director.id }}-{{ director.name|slugify }}"
+                    >
+                        <img src="{{ director.posterPath }}"
+                            class="card-img-bottom"
+                            style="max-width:100%"
+                            alt="{{ director.name }} Poster"
+                        >
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+
+        {# --- Production countries --- #}
+
+        <h6 style="margin-bottom: 0.4rem;margin-top: 1rem">Production countries</h6>
+        <div class="carousel">
+            <p style="margin-bottom: 0">
+                {% if movieProductionCountries|length == 0 %} - {% endif %}
+                {% for movieProductionCountry in movieProductionCountries %}{{ movieProductionCountry }}{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+        </div>
+    </main>
+{% endblock %}

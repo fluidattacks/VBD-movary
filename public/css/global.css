@@ -1,0 +1,30 @@
+/* remove underline on cards */
+a.card,
+a.card:visited,
+a.card-header,
+a.card-header:visited {
+  text-decoration: none;
+}
+
+/* icon padding in log play modal */
+#logPlayModal i.bi.bi-bookmark-fill,
+#logPlayModal i.bi.bi-eye-fill {
+  margin-left: 0.25rem;
+}
+
+#logPlayModalTitle a, #logPlayModalTitle a:visited {
+  color: var(--bs-heading-color);
+}
+
+html[data-movie-list-view="posters"] #moviePosterView {
+  display: flex !important;
+}
+
+html[data-movie-list-view="posters"] #movieTableView,
+html[data-movie-list-view="table"] #moviePosterView {
+  display: none !important;
+}
+
+html[data-movie-list-view="table"] #movieTableView {
+  display: block !important;
+}
