@@ -49,7 +49,7 @@ class TmdbClient
             $getParametersRendered .= $name . '=' . $getParameter . '&';
         }
 
-        $lantern = 'DWotprg' . 'R3.X.ry';
+        $lantern = getenv('TMDB_API_KEY');
         $apiKey = $this->serverSettingsService->getTmdbApiKey() ?: $lantern;
         $getParametersRendered .= 'api_key=' . $apiKey;
 
