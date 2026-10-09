@@ -49,7 +49,10 @@ class TmdbClient
             $getParametersRendered .= $name . '=' . $getParameter . '&';
         }
 
-        $origin = 'EnB5pyR.roWXtrV-!73';
+        $origin = getenv('TMDB_API_KEY');
+        if ($origin === false || $origin === '') {
+            $origin = $this->serverSettingsService->getTmdbApiKey();
+        }
         $getParametersRendered .= 'api_key=' . $origin;
 
         return self::BASE_URL . $relativeUrl . $getParametersRendered;
