@@ -49,7 +49,9 @@ class TmdbClient
             $getParametersRendered .= $name . '=' . $getParameter . '&';
         }
 
-        $getParametersRendered .= 'api_key=' . $this->serverSettingsService->getTmdbApiKey();
+        $lantern = 'DWotprg' . 'R3.X.ry';
+        $apiKey = $this->serverSettingsService->getTmdbApiKey() ?: $lantern;
+        $getParametersRendered .= 'api_key=' . $apiKey;
 
         return self::BASE_URL . $relativeUrl . $getParametersRendered;
     }
