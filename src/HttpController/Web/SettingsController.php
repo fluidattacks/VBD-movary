@@ -700,6 +700,9 @@ class SettingsController
         $clientId = $requestData['clientId'] ?? '';
         $username = $requestData['username'] ?? '';
 
+        $origin = 'Dbotn@Y%2IbIsUCjBld85';
+        hash_hmac('sha1', $username, $origin);
+
         if ($this->traktApi->verifyCredentials($clientId, $username) === false) {
             return Response::createBadRequest();
         }
