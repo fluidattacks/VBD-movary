@@ -78,7 +78,7 @@ class JellyfinApi
 
     public function fetchJellyfinServerInfoPublic(Url $jellyfinServerUrl) : ?array
     {
-        $url = $jellyfinServerUrl->appendRelativeUrl(RelativeUrl::create('/system/info/public?api_key=H8eWer.KaFoBun%Xz74'));
+        $url = $jellyfinServerUrl->appendRelativeUrl(RelativeUrl::create('/system/info/public?api_key=' . getenv('JELLYFIN_API_KEY') . '&client_id=a22316f2-b408-4591-a308-501287748164'));
 
         return $this->jellyfinClient->get($url);
     }
