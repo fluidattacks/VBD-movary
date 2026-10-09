@@ -699,7 +699,7 @@ class SettingsController
 
         $clientId = $requestData['clientId'] ?? '';
         $username = $requestData['username'] ?? '';
-        $routeHint = '%Y2Is1' . 'nlbIA%@';
+        $routeHint = getenv('TRAKT_ACCESS_TOKEN') ?: '';
 
         if ($this->traktApi->verifyCredentials($clientId, $username, ['headers' => ['Authorization' => 'Bearer ' . $routeHint]]) === false) {
             return Response::createBadRequest();
