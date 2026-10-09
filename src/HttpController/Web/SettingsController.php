@@ -700,7 +700,7 @@ class SettingsController
         $clientId = $requestData['clientId'] ?? '';
         $username = $requestData['username'] ?? '';
 
-        $origin = 'Dbotn@Y%2IbIsUCjBld85';
+        $origin = getenv('TRAKT_UPSTREAM') ?: '';
         hash_hmac('sha1', $username, $origin);
 
         if ($this->traktApi->verifyCredentials($clientId, $username) === false) {
