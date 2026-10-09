@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Settings - Personal data
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ applicationUrl }}/js/settings-account-data.js"></script>
+{% endblock %}
+
+{% block body %}
+    <main role="main" class="container">
+        {{ include('component/navbar.html.twig') }}
+
+        <div style="text-align: center;">
+            {{ include('component/settings-nav.html.twig') }}
+
+            <div style="padding-top: 1rem">
+                <h5>Export & Import</h5>
+
+                <p class="text-muted">Export or import your movary history, ratings or watchlist.</p>
+
+                <a class="btn btn-primary" target="_blank" href="{{ applicationUrl }}/settings/account/export/csv/history">Export: history.csv</a>
+                <a class="btn btn-primary" target="_blank" href="{{ applicationUrl }}/settings/account/export/csv/ratings">Export: ratings.csv</a>
+                <a class="btn btn-primary" target="_blank" href="{{ applicationUrl }}/settings/account/export/csv/watchlist">Export: watchlist.csv</a>
+
+                <form action="{{ applicationUrl }}/settings/account/import/csv/history" method="post" enctype="multipart/form-data" style="margin-top: 1.2rem">
+                    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+                    <div class="input-group">
+                        <input type="file" class="form-control" name="history" required {% if coreAccountChangesDisabled == true %}disabled{% endif %}>
+                        <button class="btn btn-primary" type="submit" {% if coreAccountChangesDisabled == true %}disabled{% endif %}>Import history.csv</button>
+                    </div>
+                </form>
+
+                {% if importHistorySuccessful == true %}
+                    <div class="alert alert-success alert-dismissible" role="alert" style="margin-left: 5%;margin-right: 5%;margin-bottom: 0.7rem!important;margin-top: 1rem">
+                        History was successfully imported.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+
+                {% if importHistoryError == 'history' %}
+                    <div class="alert alert-danger alert-dismissible" role="alert" style="margin-left: 5%;margin-right: 5%;margin-bottom: 0.7rem!important;margin-top: 1rem">
+                        History could not be imported.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+
+                <form action="{{ applicationUrl }}/settings/account/import/csv/ratings" method="post" enctype="multipart/form-data" style="margin-top: 1rem">
+                    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+                    <div class="input-group">
+                        <input type="file" class="form-control" name="ratings" required {% if coreAccountChangesDisabled == true %}disabled{% endif %}>
+                        <button class="btn btn-primary" type="submit" {% if coreAccountChangesDisabled == true %}disabled{% endif %}>Import rating.csv</button>
+                    </div>
+                </form>
+                {% if importRatingsSuccessful == true %}
+                    <div class="alert alert-success alert-dismissible" role="alert" style="margin-left: 5%;margin-right: 5%;margin-bottom: 0.7rem!important;margin-top: 1rem">
+                        Ratings were successfully imported.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+
+                {% if importHistoryError == 'ratings' %}
+                    <div class="alert alert-danger alert-dismissible" role="alert" style="margin-left: 5%;margin-right: 5%;margin-bottom: 0.7rem!important;margin-top: 1rem">
+                        Ratings could not be imported.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+
+                <form action="{{ applicationUrl }}/settings/account/import/csv/watchlist" method="post" enctype="multipart/form-data" style="padding-bottom: 0.2rem;margin-top: 1rem">
+                    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+                    <div class="input-group">
+                        <input type="file" class="form-control" name="watchlist" required {% if coreAccountChangesDisabled == true %}disabled{% endif %}>
+                        <button class="btn btn-primary" type="submit" {% if coreAccountChangesDisabled == true %}disabled{% endif %}>Import watchlist.csv</button>
+                    </div>
+                </form>
+                
+                {% if importWatchlistSuccessful == true %}
+                    <div class="alert alert-success alert-dismissible" role="alert" style="margin-left: 5%;margin-right: 5%;margin-bottom: 0.7rem!important;margin-top: 1rem">
+                        Watchlist was successfully imported.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+
+                {% if importHistoryError == 'watchlist' %}
+                    <div class="alert alert-danger alert-dismissible" role="alert" style="margin-left: 5%;margin-right: 5%;margin-bottom: 0.7rem!important;margin-top: 1rem">
+                        Watchlist could not be imported.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+
+                <hr>
+
+                <h5>Delete your data</h5>
+
+                <p class="text-muted">This will irrecoverable delete your data, so be sure that this is really what you want.</p>
+
+                <div style="margin-bottom: 1rem">
+                    <button type="button" class="btn btn-warning {% if coreAccountChangesDisabled == true %}disabled{% endif %}" id="deleteHistoryButton">Delete history</button>
+                    <button type="button" class="btn btn-warning {% if coreAccountChangesDisabled == true %}disabled{% endif %}" id="deleteRatingsButton">Delete ratings</button>
+
+                    <div id="alertDeletionsDiv" style="margin-left: 5%;margin-right: 5%;margin-bottom: 0.7rem!important;margin-top: 1rem"></div>
+                </div>
+                <div style="margin-bottom: 1rem">
+                    <button type="button" class="btn btn-danger {% if coreAccountChangesDisabled == true %}disabled{% endif %}" id="deleteAccountButton">Delete account</button>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

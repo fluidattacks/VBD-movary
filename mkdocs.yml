@@ -1,0 +1,59 @@
+site_name: Movary Documentation
+site_description: Movary Documentation
+repo_url: https://github.com/leepeuker/movary/
+edit_uri: edit/main/docs
+
+theme:
+  name: material
+  language: en
+  logo: images/favicon.png
+  favicon: images/favicon.png
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+      primary: indigo
+      accent: indigo
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+      primary: indigo
+      accent: indigo
+  features:
+    - content.action.edit
+    - content.action.view
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+
+nav:
+  - Home: 'index.md'
+  - Installation:
+      - Docker (recommended): install/docker.md
+      - Manual: install/manual.md
+  - Getting started: 'getting-started.md'
+  - Configuration: 'configuration.md'
+  - Features:
+      - TMDB Data: features/tmdb-data.md
+      - IMDb Rating: features/imdb-rating.md
+      - Locations: features/locations.md
+      - Plex: features/plex.md
+      - Jellyfin: features/jellyfin.md
+      - Emby: features/emby.md
+      - Kodi: features/kodi.md
+      - Letterboxd: features/letterboxd.md
+      - Trakt TV: features/trakt.md
+      - Netflix: features/netflix.md
+      - Radarr: features/radarr.md
+      - Mastodon: features/mastodon.md
+  - Backup and restore: 'backup-and-restore.md'
+  - Development:
+      - Setup: development/setup.md
+      - Directory structure: development/file-structure.md
+      - How does the backend work?: development/structure.md
+      - Database migrations: development/database-migrations.md
+  - FAQ: 'faq.md'

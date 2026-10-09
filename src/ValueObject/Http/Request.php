@@ -1,0 +1,209 @@
+<?php declare(strict_types=1);
+
+namespace Movary\ValueObject\Http;
+
+use UnexpectedValueException;
+
+class Request
+{
+    private array $routeParameters = [];
+
+    private function __construct(
+        private readonly string $path,
+        private readonly array $getParameters,
+        private readonly array $postParameters,
+        private readonly string $body,
+        private readonly array $filesParameters,
+        private readonly array $headers,
+        private readonly array $cookies,
+        private readonly string $userAgent,
+        private readonly ?string $httpHost,
+        private readonly ?string $httpReferer,
+        private readonly bool $isHttps,
+    ) {
+    }
+
+    public static function createFromGlobals() : self
+    {
+        $uri = self::extractRequestUri();
+        $path = self::extractPath($uri);
+
+        $httpHost = self::getServerSetting('HTTP_HOST') ?? '';
+        $httpReferer = self::getServerSetting('HTTP_REFERER') ?? '';
+
+        $getParameters = self::extractGetParameter();
+        $postParameters = self::extractPostParameter();
+        $filesParameters = self::extractFilesParameter();
+        $headers = self::extractHeaders();
+        $cookies = self::extractCookies();
+        $userAgent = self::extractUserAgent();
+
+        $body = (string)file_get_contents('php://input');
+
+        return new self(
+            $path,
+            $getParameters,
+            $postParameters,
+            $body,
+            $filesParameters,
+            $headers,
+            $cookies,
+            $userAgent,
+            $httpHost,
+            $httpReferer,
+            self::detectHttps(),
+        );
+    }
+
+    private static function extractFilesParameter() : array
+    {
+        // phpcs:ignore MySource.PHP.GetRequestData
+        return $_FILES;
+    }
+
+    private static function extractCookies() : array
+    {
+        return $_COOKIE;
+    }
+
+    private static function extractGetParameter() : array
+    {
+        $getParameters = filter_input_array(INPUT_GET) ?? [];
+
+        if ($getParameters === false) {
+            throw new UnexpectedValueException('Could not load GET parameters.');
+        }
+
+        return $getParameters;
+    }
+
+    private static function extractHeaders() : array
+    {
+        return getallheaders();
+    }
+
+    private static function extractPath(string $uri) : string
+    {
+        if (strpos($uri, 'https://') === 0 || strpos($uri, 'http://') === 0) {
+            $path = parse_url($uri, PHP_URL_PATH) ?? '/';
+        } else {
+            $parsableUrl = sprintf('http://%s%s', 'fakehost', $uri);
+            $path = parse_url($parsableUrl, PHP_URL_PATH) ?? '/';
+        }
+
+        if (false === $path) {
+            return '/';
+        }
+
+        return $path;
+    }
+
+    private static function extractPostParameter() : array
+    {
+        $postParameters = filter_input_array(INPUT_POST) ?? [];
+
+        if ($postParameters === false) {
+            throw new UnexpectedValueException('Could not load POST parameters.');
+        }
+
+        return $postParameters;
+    }
+
+    private static function extractRequestUri() : string
+    {
+        return self::getServerSetting('REQUEST_URI') ?? '';
+    }
+
+    private static function extractUserAgent() : string
+    {
+        return self::getServerSetting('HTTP_USER_AGENT') ?? '';
+    }
+
+    private static function detectHttps() : bool
+    {
+        return in_array(self::getServerSetting('HTTPS'), ['on', '1'], true);
+    }
+
+    private static function getServerSetting(string $key) : ?string
+    {
+        return empty($_SERVER[$key]) === false ? (string)$_SERVER[$key] : null;
+    }
+
+    public function addRouteParameters(array $routeParameters) : void
+    {
+        $this->routeParameters = array_merge($this->routeParameters, $routeParameters);
+    }
+
+    public function getBody() : string
+    {
+        return $this->body;
+    }
+
+    public function getFileParameters() : array
+    {
+        return $this->filesParameters;
+    }
+
+    public function getCookie(string $name) : ?string
+    {
+        $value = $this->cookies[$name] ?? null;
+
+        return is_string($value) === true ? $value : null;
+    }
+
+    public function getGetParameters() : array
+    {
+        return $this->getParameters;
+    }
+
+    public function getHeaders() : array
+    {
+        return $this->headers;
+    }
+
+    public function getHeader(string $name) : ?string
+    {
+        foreach ($this->headers as $headerName => $value) {
+            if (strcasecmp((string)$headerName, $name) === 0) {
+                return is_string($value) === true ? $value : null;
+            }
+        }
+
+        return null;
+    }
+
+    public function getHttpHost() : ?string
+    {
+        return $this->httpHost;
+    }
+
+    public function getHttpReferer() : ?string
+    {
+        return $this->httpReferer;
+    }
+
+    public function isHttps() : bool
+    {
+        return $this->isHttps;
+    }
+
+    public function getPath() : string
+    {
+        return $this->path;
+    }
+
+    public function getPostParameters() : array
+    {
+        return $this->postParameters;
+    }
+
+    public function getRouteParameters() : array
+    {
+        return $this->routeParameters;
+    }
+
+    public function getUserAgent() : string
+    {
+        return $this->userAgent;
+    }
+}

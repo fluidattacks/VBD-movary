@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ routeUsername }}'s dashboard
+{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ applicationUrl }}/css/dashboard.css" rel="stylesheet">
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ applicationUrl }}/js/dashboard.js"></script>
+    <script src="{{ applicationUrl }}/js/component/user-select.js"></script>
+{% endblock %}
+
+{% block body %}
+    <main role="main" class="container">
+        {{ include('component/navbar.html.twig') }}
+        <div style="text-align: center;padding-bottom: 1rem">
+            {{ include('component/user-select.html.twig') }}
+
+            <h2 style="padding-bottom: 0.5rem">Overview</h2>
+            <div class="row justify-content-md-center {{ theme == 'dark' ? 'text-light' : 'text-dark' }} theme-text-color">
+                <div class="col ">
+                    <span class="stat-value">{{ totalPlayCount }}</span><br><span class="stat-description">TOTAL PLAYS</span>
+                </div>
+                <div class="col ">
+                    <span class="stat-value">{{ uniqueMoviesCount }}</span><br><span class="stat-description">UNIQUE MOVIES</span>
+                </div>
+                <div class="col">
+                    <span class="stat-value">{{ totalHoursWatched }}</span><br><span class="stat-description font-weight-light">HOURS WATCHED</span>
+                </div>
+            </div>
+            <br>
+            <div class="row justify-content-md-center {{ theme == 'dark' ? 'text-light' : 'text-dark' }} theme-text-color">
+                <div class="col ">
+                    <span class="stat-value">{{ averagePlaysPerDay }}</span><br><span class="stat-description">PLAYS PER DAY</span>
+                </div>
+                <div class="col ">
+                    <span class="stat-value">{{ averageRuntime }}</span><br><span class="stat-description">AVERAGE RUNTIME</span>
+                </div>
+                <div class="col ">
+                    <span class="stat-value">{{ averagePersonalRating }}</span><br><span class="stat-description">AVERAGE RATING</span>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="list-group" id="dashboardRows" data-username="{{ routeUsername }}">
+                {% for dashboardRow in dashboardRows %}
+                    {% if dashboardRow.isVisible %}
+                        {% if dashboardRow.isExtended %}
+                            {{ include('component/dashboard/row.html.twig') }}
+                        {% else %}
+                            {% import 'component/dashboard/row-item-toggle.html.twig' as rowItemToggle %}
+                            {{ rowItemToggle.create(dashboardRow) }}
+                            <li class="list-group-item dashboardRowPlaceholder inactiveItem py-4">
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <div class="spinner-border text-secondary" role="status">
+                                        <span class="visually-hidden">Loading {{ dashboardRow.name }}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+{% endblock %}

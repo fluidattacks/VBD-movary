@@ -1,0 +1,65 @@
+async function regenerateRadarrFeedId() {
+    const confirmed = await showConfirmationModal({
+        title: 'Regenerate Radarr feed URL',
+        message: 'Are you sure you want to regenerate your Radarr feed URL?',
+        confirmLabel: 'Regenerate URL',
+    })
+
+    if (confirmed === false) {
+        return
+    }
+
+    removeAlert('alertFeedUrlDiv')
+
+    regenerateRadarrFeedRequest().then(webhookUrl => {
+        setRadarrFeedUrl(webhookUrl)
+        addAlert('alertFeedUrlDiv', 'Generated new feed url', 'success')
+        document.getElementById('deleteRadarrFeedButton').classList.remove('disabled')
+    }).catch((error) => {
+        console.log(error)
+        addAlert('alertFeedUrlDiv', 'Could not generate feed url', 'danger')
+    })
+}
+
+async function regenerateRadarrFeedRequest() {
+    const response = await fetchWithCsrf(APPLICATION_URL + '/settings/radarr/feed', {'method': 'put'})
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    const data = await response.json()
+
+    return data.url
+}
+
+async function deleteRadarrFeedId() {
+    const confirmed = await showConfirmationModal({
+        title: 'Delete Radarr feed URL',
+        message: 'Are you sure you want to delete your Radarr feed URL?',
+        confirmLabel: 'Delete URL',
+        confirmClass: 'btn-danger',
+    })
+
+    if (confirmed === false) {
+        return
+    }
+
+    await fetchWithCsrf(APPLICATION_URL + '/settings/radarr/feed', {'method': 'delete'}).then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        setRadarrFeedUrl()
+        addAlert('alertFeedUrlDiv', 'Deleted feed url', 'success');
+    });
+}
+
+function setRadarrFeedUrl(webhookUrl) {
+    if (webhookUrl) {
+        document.getElementById('radarrFeedUrl').innerHTML = webhookUrl
+        document.getElementById('deleteRadarrFeedButton').classList.remove('disabled')
+    } else {
+        document.getElementById('radarrFeedUrl').innerHTML = '-'
+        document.getElementById('deleteRadarrFeedButton').classList.add('disabled')
+    }
+}

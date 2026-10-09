@@ -1,0 +1,32 @@
+POST http://127.0.0.1/movie/34/rating
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/x-www-form-urlencoded
+
+rating=0
+
+####
+
+POST http://127.0.0.1/log-movie
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"watchDate" : "22.07.22","tmdbId" : 9323, "personalRating" : 6, "dateFormat" : "d.m.y"}
+
+####
+
+DELETE http://127.0.0.1/movie/26/history
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"date" : "23.07.22", "dateFormat" : "d.m.y"}
+
+
+####
+
+GET http://127.0.0.1/movies/4/watch-providers?country=DE&streamType=all
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json

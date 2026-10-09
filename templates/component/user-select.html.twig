@@ -1,0 +1,17 @@
+<div style="margin-top: 1rem;margin-bottom: 1rem">
+    <div class="input-group">
+        <span class="input-group-text">User</span>
+        <select class="form-select" id="changeUserContextSelect">
+            <option disabled>Select user</option>
+            {% if currentUserName is not null %}
+                <option value="{{ currentUserName }}" {% if routeUsername == currentUserName %}selected{% endif %}>{{ currentUserName }}</option>
+            {% endif %}
+            {% for user in users %}
+                {% if currentUserName != user.name %}
+                    <option value="{{ user.name }}" {% if routeUsername == user.name %}selected{% endif %}>{{ user.name }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+</div>
+

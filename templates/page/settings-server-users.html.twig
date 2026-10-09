@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Settings - App
+{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ applicationUrl }}/css/settings.css" rel="stylesheet">
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ applicationUrl }}/js/settings-server-users.js"></script>
+{% endblock %}
+
+{% block body %}
+    <main role="main" class="container">
+        {{ include('component/navbar.html.twig') }}
+
+        <div style="text-align: center;">
+            {{ include('component/settings-nav.html.twig') }}
+            {{ include('component/modal-user-filters.html.twig') }}
+
+            <div style="padding-bottom: 1rem;padding-top: 1rem">
+                <h5 style="margin-bottom: 1rem;">User Management</h5>
+
+                <p class="text-muted">
+                    Click a user row to edit or delete the user{% if passwordResetAvailable == true %}, or send a password reset email{% endif %}.
+                </p>
+
+                <div id="userManagementAlerts"></div>
+
+                <div class="d-flex justify-content-between align-items-center gap-3 mb-3 text-start">
+                    <div class="d-flex align-items-center gap-2">
+                        <select class="form-select" id="usersPerPage" style="width: 5rem">
+                            <option value="20" {{ usersPerPage == 20 ? 'selected' }}>20</option>
+                            <option value="50" {{ usersPerPage == 50 ? 'selected' }}>50</option>
+                            <option value="100" {{ usersPerPage == 100 ? 'selected' }}>100</option>
+                            <option value="250" {{ usersPerPage == 250 ? 'selected' }}>250</option>
+                        </select>
+                        <label for="usersPerPage" class="form-label mb-0">per page</label>
+                    </div>
+                    <div class="btn-group" role="group" aria-label="User table actions">
+                        <button class="btn btn-primary {{ userFiltersActive ? 'active' }}" type="button" data-bs-toggle="modal" data-bs-target="#userFiltersModal" aria-label="Filter users" title="Filter users" aria-pressed="{{ userFiltersActive ? 'true' : 'false' }}">
+                            <i class="bi bi-filter" aria-hidden="true"></i>
+                        </button>
+                        <button class="btn btn-primary" type="button" onclick="refreshUsersPage()" aria-label="Refresh users" title="Refresh users" style="border-left-color: #aab0b3">
+                            <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover" id="usersTable">
+                        <thead>
+                        <tr>
+                            <th scope="col">Id</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Role</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for user in users %}
+                            <tr data-is-admin="{{ user.isAdmin == 1 ? 'true' : 'false' }}" style="cursor: pointer">
+                                <td>{{ user.id }}</td>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    <span class="badge rounded-pill text-bg-{{ user.isAdmin == 1 ? 'light' : 'dark' }}">
+                                        {{ user.isAdmin == 1 ? 'Admin' : 'User' }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {{ include('component/pagination.html.twig', {
+                    paginationPath: applicationUrl ~ '/settings/server/users',
+                    paginationQuery: paginationQuery,
+                }) }}
+
+                <button type="button" class="btn btn-primary float-end" style="width: 100%;" onclick="showCreateUserModal()">Create User</button>
+            </div>
+
+        </div>
+
+        {{ include('component/modal-user.html.twig') }}
+    </main>
+{% endblock %}
